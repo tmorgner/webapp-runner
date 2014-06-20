@@ -1,15 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
 
     <groupId>com.github.jsimone</groupId>
     <artifactId>webapp-runner</artifactId>
     <version>7.0.53.0-SNAPSHOT</version>
-
 
     <name>webapp-runner</name>
     <description>Lightweight Application Launcher. Launch your webapp in the most popular open source web container available with a single command.</description>
@@ -17,42 +11,23 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>https://github.com/jsimone/webapp-runner/blob/master/src/main/resources/license/header.txt</url>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
     <distributionManagement>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>publish</id>
+            <name>monkeyrepo</name>
+            <url>http://repo.rabbitstewdio.local/monkeyrepo</url>
         </repository>
     </distributionManagement>
     <scm>
-        <url>https://github.com/jsimone/webapp-runner</url>
-        <connection>scm:git:git@github.com:jsimone/webapp-runner.git</connection>
-        <developerConnection>scm:git:git@github.com:jsimone/webapp-runner.git</developerConnection>
+        <url>http://gitlab.rabbitstewdio.local/projects/GSRV/repos/webapp-runner/browse</url>
+        <connection>ssh://git@gitlab.rabbitstewdio.local:7999/gsrv/webapp-runner.git</connection>
+        <developerConnection>ssh://git@gitlab.rabbitstewdio.local:7999/gsrv/webapp-runner.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-    <developers>
-        <developer>
-            <id>jsimone</id>
-            <name>John Simone</name>
-            <email>john@heroku.com</email>
-        </developer>
-    </developers>
-    <mailingLists>
-        <mailingList>
-            <name>Webapp runner issues</name>
-            <archive>https://github.com/jsimone/webapp-runner/issues?state=closed</archive>
-            <subscribe>https://github.com/jsimone/webapp-runner/toggle_watch</subscribe>
-            <unsubscribe>https://github.com/jsimone/webapp-runner/toggle_watch</unsubscribe>
-            <post>https://github.com/jsimone/webapp-runner/issues/new</post>
-        </mailingList>
-    </mailingLists>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/jsimone/webapp-runner/issues/new</url>
-    </issueManagement>
 
     <properties>
         <source.plugin.version>2.1.2</source.plugin.version>
@@ -133,6 +108,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -170,105 +146,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>prepare-for-central</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <property>
-                    <name>prepareForCentral</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${source.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${javadoc.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadoc</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${gpg.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>license-check</id>
-            <activation>
-                <property>
-                    <name>staticAnalysis</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.mycila.maven-license-plugin</groupId>
-                        <artifactId>maven-license-plugin</artifactId>
-                        <configuration>
-                            <aggregate>true</aggregate>
-                            <header>license/header.txt</header>
-                            <excludes>
-                                <exclude>target/**</exclude>
-                                <exclude>**/license/header.txt</exclude>
-                                <exclude>**/*.md</exclude>
-                                <exclude>**/.gitignore</exclude>
-                            </excludes>
-                            <failIfMissing>${staticAnalysis.failOnError}</failIfMissing>
-                            <headerDefinitions>
-                                <headerDefinition>license/stringtemplatedefinition.xml</headerDefinition>
-                            </headerDefinitions>
-                            <mapping>
-                                <policy>DOUBLESLASH_STYLE</policy>
-                                <props>SCRIPT_STYLE</props>
-                            </mapping>
-                            <strictCheck>true</strictCheck>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
