@@ -28,30 +28,20 @@ package webapp.runner.launch;
 import com.beust.jcommander.JCommander;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
-import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.LifecycleState;
-import org.apache.catalina.Role;
-import org.apache.catalina.Server;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.StandardServer;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityCollection;
-import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.ExpandWar;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.users.MemoryUserDatabase;
-import org.apache.catalina.users.MemoryUserDatabaseFactory;
 
-import javax.naming.CompositeName;
-import javax.naming.StringRefAddr;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.ServletSecurity.TransportGuarantee;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -60,8 +50,6 @@ import java.util.Properties;
  */
 @SuppressWarnings({"HardCodedStringLiteral", "LocalCanBeFinal"})
 public class Main {
-
-  private static final String AUTH_ROLE = "user";
 
   public static void main(String[] args) throws Exception {
 
@@ -143,7 +131,7 @@ public class Main {
          * tomcat.enableNaming() to be called much earlier in the code.
          */
     if (commandLineParams.enableBasicAuth || commandLineParams.tomcatUsersLocation != null) {
-      configureUserStore(tomcat, commandLineParams);
+      TomcatUtil.configureUserStore(tomcat, commandLineParams);
     }
     return tomcat;
   }
@@ -153,10 +141,10 @@ public class Main {
                                           Tomcat tomcat,
                                           ContextDefinition war) throws IOException, ServletException {
     Context ctx = configureContext(commandLineParams, tomcat, war);
-    configureShutdownHandler(commandLineParams, tomcat, ctx);
+    TomcatUtil.configureShutdownHandler(commandLineParams, tomcat, ctx);
 
     Properties contextConfiguration = war.getContextConfiguration();
-    for(Object key: contextConfiguration.keySet()) {
+    for (Object key : contextConfiguration.keySet()) {
       String keyText = String.valueOf(key);
       ctx.addParameter(keyText, contextConfiguration.getProperty(keyText));
     }
@@ -179,29 +167,10 @@ public class Main {
     }
 
     if (commandLineParams.enableBasicAuth) {
-      enableBasicAuth(ctx, commandLineParams.enableSSL);
+      TomcatUtil.enableBasicAuth(ctx, commandLineParams.enableSSL);
     }
     if (configurator != null) {
       configurator.configureContext(tomcat, commandLineParams, war, ctx);
-    }
-  }
-
-  private static void configureShutdownHandler(CommandLineParams commandLineParams, final Tomcat tomcat, Context ctx) {
-    if (!commandLineParams.shutdownOverride) {
-      // allow Tomcat to shutdown if a context failure is detected
-      final String ctxName = commandLineParams.contextPath;
-      ctx.addLifecycleListener(new LifecycleListener() {
-        public void lifecycleEvent(LifecycleEvent event) {
-          if (event.getLifecycle().getState() == LifecycleState.FAILED) {
-            Server server = tomcat.getServer();
-            if (server instanceof StandardServer) {
-              StandardServer standardServer = (StandardServer) server;
-              System.err.println("SEVERE: Context [" + ctxName + "] failed in [" + event.getLifecycle().getClass().getName() + "] lifecycle. Allowing Tomcat to shutdown.");
-              standardServer.stopAwait();
-            }
-          }
-        }
-      });
     }
   }
 
@@ -222,11 +191,35 @@ public class Main {
       String expandedDir = ExpandWar.expand(tomcat.getHost(), fileUrl, "/expanded");
       System.out.println("Expanding " + war.getName() + " into " + expandedDir);
       System.out.println("Adding Context " + ctxName + " for " + expandedDir);
-      return tomcat.addWebapp(ctxName, expandedDir);
+      return addWebapp(tomcat, ctxName, expandedDir);
     } else {
       System.out.println("Adding Context " + ctxName + " for " + war.getPath());
-      return tomcat.addWebapp(ctxName, war.getAbsolutePath());
+      return addWebapp(tomcat, ctxName, war.getAbsolutePath());
     }
+  }
+
+
+  public static Context addWebapp(Tomcat tomcat, String url, String path) {
+    Host host = tomcat.getHost();
+    silence(host, url);
+
+    Context ctx = new OverrideContext();
+    ctx.setName(url);
+    ctx.setPath(url);
+    ctx.setDocBase(path);
+    ctx.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
+
+    ContextConfig ctxCfg = new ContextConfig();
+    // prevent it from looking ( if it finds one - it'll have dup error )
+    ctxCfg.setDefaultWebXml(tomcat.noDefaultWebXmlPath());
+    ctx.addLifecycleListener(ctxCfg);
+
+    host.addChild(ctx);
+    return ctx;
+  }
+
+  private static void silence(Host host, String ctx) {
+    Logger.getLogger(TomcatUtil.getLoggerName(host, ctx)).setLevel(Level.WARNING);
   }
 
   private static Connector configureConnector(CommandLineParams commandLineParams) {
@@ -278,7 +271,7 @@ public class Main {
    * @return absolute dir path
    * @throws IOException if dir fails to be created
    */
-  static String resolveTomcatBaseDir(Integer port) throws IOException {
+  protected static String resolveTomcatBaseDir(Integer port) throws IOException {
     final File baseDir = new File(System.getProperty("user.dir") + "/target/tomcat." + port);
     new File(baseDir, "webapps").mkdirs();
 
@@ -293,83 +286,10 @@ public class Main {
     }
   }
 
-  /*
-   * Set up basic auth security on the entire application
-   */
-  static void enableBasicAuth(Context ctx, boolean enableSSL) {
-    LoginConfig loginConfig = new LoginConfig();
-    loginConfig.setAuthMethod("BASIC");
-    ctx.setLoginConfig(loginConfig);
-    ctx.addSecurityRole(AUTH_ROLE);
-
-    SecurityConstraint securityConstraint = new SecurityConstraint();
-    securityConstraint.addAuthRole(AUTH_ROLE);
-    if (enableSSL) {
-      securityConstraint.setUserConstraint(TransportGuarantee.CONFIDENTIAL.toString());
-    }
-    SecurityCollection securityCollection = new SecurityCollection();
-    securityCollection.addPattern("/*");
-    securityConstraint.addCollection(securityCollection);
-    ctx.addConstraint(securityConstraint);
-  }
-
-  static void configureUserStore(final Tomcat tomcat, final CommandLineParams commandLineParams) throws Exception {
-    String tomcatUsersLocation = commandLineParams.tomcatUsersLocation;
-    if (tomcatUsersLocation == null) {
-      tomcatUsersLocation = "../../tomcat-users.xml";
-    }
-
-    javax.naming.Reference ref = new javax.naming.Reference("org.apache.catalina.UserDatabase");
-    ref.add(new StringRefAddr("pathname", tomcatUsersLocation));
-    MemoryUserDatabase memoryUserDatabase =
-            (MemoryUserDatabase) new MemoryUserDatabaseFactory().getObjectInstance(
-                    ref,
-                    new CompositeName("UserDatabase"),
-                    null,
-                    null);
-
-    // Add basic auth user
-    if (commandLineParams.basicAuthUser != null && commandLineParams.basicAuthPw != null) {
-
-      memoryUserDatabase.setReadonly(false);
-      Role user = memoryUserDatabase.createRole(AUTH_ROLE, AUTH_ROLE);
-      memoryUserDatabase.createUser(
-              commandLineParams.basicAuthUser,
-              commandLineParams.basicAuthPw,
-              commandLineParams.basicAuthUser).addRole(user);
-      memoryUserDatabase.save();
-
-    } else if (System.getenv("BASIC_AUTH_USER") != null && System.getenv("BASIC_AUTH_PW") != null) {
-
-      memoryUserDatabase.setReadonly(false);
-      Role user = memoryUserDatabase.createRole(AUTH_ROLE, AUTH_ROLE);
-      memoryUserDatabase.createUser(
-              System.getenv("BASIC_AUTH_USER"),
-              System.getenv("BASIC_AUTH_PW"),
-              System.getenv("BASIC_AUTH_USER")).addRole(user);
-      memoryUserDatabase.save();
-    }
-
-    // Register memoryUserDatabase with GlobalNamingContext
-    System.out.println("MemoryUserDatabase: " + memoryUserDatabase);
-    tomcat.getServer().getGlobalNamingContext().addToEnvironment("UserDatabase", memoryUserDatabase);
-
-    org.apache.catalina.deploy.ContextResource ctxRes =
-            new org.apache.catalina.deploy.ContextResource();
-    ctxRes.setName("UserDatabase");
-    ctxRes.setAuth("Container");
-    ctxRes.setType("org.apache.catalina.UserDatabase");
-    ctxRes.setDescription("User database that can be updated and saved");
-    ctxRes.setProperty("factory", "org.apache.catalina.users.MemoryUserDatabaseFactory");
-    ctxRes.setProperty("pathname", tomcatUsersLocation);
-    tomcat.getServer().getGlobalNamingResources().addResource(ctxRes);
-    tomcat.getEngine().setRealm(new org.apache.catalina.realm.UserDatabaseRealm());
-  }
-
   /**
    * Stops the embedded Tomcat server.
    */
-  static void addShutdownHook(final Tomcat tomcat) {
+  public static void addShutdownHook(final Tomcat tomcat) {
 
     // add shutdown hook to stop server
     Runtime.getRuntime().addShutdownHook(new Thread() {
