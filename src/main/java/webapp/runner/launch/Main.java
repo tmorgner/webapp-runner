@@ -51,6 +51,7 @@ import javax.servlet.annotation.ServletSecurity.TransportGuarantee;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 
 
 /**
@@ -153,6 +154,12 @@ public class Main {
                                           ContextDefinition war) throws IOException, ServletException {
     Context ctx = configureContext(commandLineParams, tomcat, war);
     configureShutdownHandler(commandLineParams, tomcat, ctx);
+
+    Properties contextConfiguration = war.getContextConfiguration();
+    for(Object key: contextConfiguration.keySet()) {
+      String keyText = String.valueOf(key);
+      ctx.addParameter(keyText, contextConfiguration.getProperty(keyText));
+    }
 
     // set the context xml location if there is only one war
     String contextXml = war.getContextXml();
