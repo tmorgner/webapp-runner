@@ -1,5 +1,6 @@
 package webapp.runner.launch;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.startup.Tomcat;
 
@@ -95,6 +96,13 @@ public class AsyncTomcatResource implements TomcatConfigurator {
     if (tomcat.getServer().getState() != LifecycleState.STARTED) {
       fail("Server not started");
     }
+  }
+
+  @Override
+  public void configureContext(Tomcat tomcat,
+                               CommandLineParams commandLineParams,
+                               ContextDefinition warLocation,
+                               Context context) {
   }
 
   protected void fail(final String message) {

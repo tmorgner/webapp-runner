@@ -124,7 +124,7 @@ public class Main {
     }
 
     for (ContextDefinition war : warLocations) {
-      configureWarContext(commandLineParams, tomcat, war);
+      configureWarContext(configurator, commandLineParams, tomcat, war);
     }
 
     if (configurator != null) {
@@ -147,7 +147,8 @@ public class Main {
     return tomcat;
   }
 
-  private static void configureWarContext(CommandLineParams commandLineParams,
+  private static void configureWarContext(TomcatConfigurator configurator,
+                                          CommandLineParams commandLineParams,
                                           Tomcat tomcat,
                                           ContextDefinition war) throws IOException, ServletException {
     Context ctx = configureContext(commandLineParams, tomcat, war);
@@ -172,6 +173,9 @@ public class Main {
 
     if (commandLineParams.enableBasicAuth) {
       enableBasicAuth(ctx, commandLineParams.enableSSL);
+    }
+    if (configurator != null) {
+      configurator.configureContext(tomcat, commandLineParams, war, ctx);
     }
   }
 
