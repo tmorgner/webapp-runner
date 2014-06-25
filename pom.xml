@@ -1,12 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.jsimone</groupId>
+    <groupId>com.rabbitstewdio.infrastructure</groupId>
     <artifactId>webapp-runner</artifactId>
     <version>7.0.53.0-SNAPSHOT</version>
 
     <name>webapp-runner</name>
-    <description>Lightweight Application Launcher. Launch your webapp in the most popular open source web container available with a single command.</description>
+    <description>Lightweight Application Launcher. Launch your webapp in the most popular open source web container
+        available with a single command.
+    </description>
     <url>http://jsimone.github.com/webapp-runner</url>
     <licenses>
         <license>
@@ -99,11 +102,11 @@
                     <groupId>stax</groupId>
                     <artifactId>stax-api</artifactId>
                 </exclusion>
-            </exclusions>            
+            </exclusions>
         </dependency>
     </dependencies>
+
     <build>
-        <finalName>webapp-runner-no-dep</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -121,8 +124,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>webapp-runner</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <appendAssemblyId>true</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>webapp.runner.launch.Main</mainClass>
@@ -146,5 +148,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
