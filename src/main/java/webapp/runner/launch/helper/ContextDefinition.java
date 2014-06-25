@@ -1,4 +1,4 @@
-package webapp.runner.launch;
+package webapp.runner.launch.helper;
 
 import java.io.File;
 import java.util.Properties;

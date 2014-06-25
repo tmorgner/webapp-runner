@@ -69,11 +69,18 @@ public class CommandLineParams {
     public String basicAuthPw;
     
     @Parameter(names = "--tomcat-users-location", description = "Location of the tomcat-users.xml file. (relative to the location of the webapp-runner jar file)")
-    public String tomcatUsersLocation;
+    public String tomcatUsersLocation = "../../tomcat-users.xml";
     
     @Parameter(names = "--expand-war", description = "Expand the war file and set it as source")
     public boolean expandWar = false;
 
     @Parameter(names = "--uri-encoding", description = "Specify URIEncoding for connector")
     public String uriEncoding;
+
+    @Parameter(names = "--baseDir", description = "Specifies the Tomcat Base Directory.")
+    public String baseDir;
+
+    @Parameter(names = "--enable-naming", description = "Enables the JNDI subsystem. This parameter is implied if basic-auth is enabled.")
+    public boolean enableNaming = false;
+
 }

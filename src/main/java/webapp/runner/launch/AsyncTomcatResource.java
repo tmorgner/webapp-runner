@@ -3,6 +3,8 @@ package webapp.runner.launch;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.startup.Tomcat;
+import webapp.runner.launch.factory.TomcatFactory;
+import webapp.runner.launch.helper.ContextDefinition;
 
 import java.io.File;
 
@@ -65,10 +67,14 @@ public class AsyncTomcatResource implements TomcatConfigurator {
 
   public TomcatHandle startServer(final CommandLineParams param,
                                   final ContextDefinition... contextDefinition) throws Exception {
-    final Tomcat tomcatServer = Main.createTomcatServer(param, this, contextDefinition);
+    final Tomcat tomcatServer = createTomcatFactory().createTomcatServer(param, this, contextDefinition);
     assertServerUp(tomcatServer);
 
     return new TomcatServerHandle(startServer(tomcatServer), tomcatServer);
+  }
+
+  protected TomcatFactory createTomcatFactory() {
+    return new TomcatFactory();
   }
 
   protected TomcatHandle startServer(final Tomcat tomcatServer) {
