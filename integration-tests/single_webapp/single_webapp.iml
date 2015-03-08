@@ -24,24 +24,26 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
     <orderEntry type="module" module-name="webapp-runner" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-jasper:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.eclipse.jdt.core.compiler:ecj:P20140317-1600" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jasper:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-servlet-api:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-juli:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jsp-api:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-el-api:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jasper-el:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-api:7.0.53" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-util:7.0.53" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-jasper:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.eclipse.jdt.core.compiler:ecj:4.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jasper:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-servlet-api:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-juli:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jsp-api:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-el-api:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-jasper-el:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-api:7.0.59" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-util:7.0.59" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: ru.zinin:tomcat-redis-session:0.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: redis.clients:jedis:2.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-pool:commons-pool:1.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.27" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: de.javakaffee.msm:memcached-session-manager-tc7:1.6.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: de.javakaffee.msm:memcached-session-manager:1.6.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: spy:spymemcached:2.7.3" level="project" />
@@ -55,8 +57,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-catalina-ha:7.0.23" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-coyote:7.0.23" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:tomcat-tribes:7.0.23" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
   </component>
 </module>
 

@@ -12,9 +12,16 @@ public class AsyncTomcatResource implements TomcatConfigurator {
 
   private static class ThreadHandle implements TomcatHandle {
     private Thread tomcatRunner;
+    private int port;
 
-    private ThreadHandle(final Thread tomcatRunner) {
+    private ThreadHandle(final Thread tomcatRunner, int port) {
       this.tomcatRunner = tomcatRunner;
+      this.port = port;
+    }
+
+    @Override
+    public int getPort() {
+      return port;
     }
 
     @Override
@@ -35,6 +42,11 @@ public class AsyncTomcatResource implements TomcatConfigurator {
     private TomcatServerHandle(final TomcatHandle parent, final Tomcat tomcatServer) {
       this.parent = parent;
       this.tomcatServer = tomcatServer;
+    }
+
+    @Override
+    public int getPort() {
+      return tomcatServer.getConnector().getPort();
     }
 
     @Override
@@ -86,7 +98,7 @@ public class AsyncTomcatResource implements TomcatConfigurator {
     });
 
     tomcatRunner.start();
-    return new ThreadHandle(tomcatRunner);
+    return new ThreadHandle(tomcatRunner, tomcatServer.getConnector().getPort());
   }
 
   protected void assertServerUp(final Tomcat tomcat) {

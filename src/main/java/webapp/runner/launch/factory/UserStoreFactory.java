@@ -1,6 +1,8 @@
 package webapp.runner.launch.factory;
 
 import org.apache.catalina.Role;
+import org.apache.catalina.deploy.ContextResource;
+import org.apache.catalina.realm.UserDatabaseRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.users.MemoryUserDatabase;
 import org.apache.catalina.users.MemoryUserDatabaseFactory;
@@ -27,8 +29,7 @@ public class UserStoreFactory {
     System.out.println("MemoryUserDatabase: " + memoryUserDatabase);
     tomcat.getServer().getGlobalNamingContext().addToEnvironment("UserDatabase", memoryUserDatabase);
 
-    org.apache.catalina.deploy.ContextResource ctxRes =
-            new org.apache.catalina.deploy.ContextResource();
+    ContextResource ctxRes = new ContextResource();
     ctxRes.setName("UserDatabase");
     ctxRes.setAuth("Container");
     ctxRes.setType("org.apache.catalina.UserDatabase");
@@ -36,7 +37,7 @@ public class UserStoreFactory {
     ctxRes.setProperty("factory", "org.apache.catalina.users.MemoryUserDatabaseFactory");
     ctxRes.setProperty("pathname", tomcatUsersLocation);
     tomcat.getServer().getGlobalNamingResources().addResource(ctxRes);
-    tomcat.getEngine().setRealm(new org.apache.catalina.realm.UserDatabaseRealm());
+    tomcat.getEngine().setRealm(new UserDatabaseRealm());
   }
 
   protected MemoryUserDatabase createemoryUserDatabase(CommandLineParams commandLineParams,

@@ -17,9 +17,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.jsimone</groupId>
-            <artifactId>webapp-runner</artifactId>
-            <version>7.0.34.1-SNAPSHOT</version>
+          <groupId>com.rabbitstewdio.infrastructure</groupId>
+          <artifactId>webapp-runner</artifactId>
+          <version>7.0.59-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

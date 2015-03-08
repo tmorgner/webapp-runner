@@ -17,9 +17,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.jsimone</groupId>
-            <artifactId>webapp-runner</artifactId>
-            <version>7.0.53.0-SNAPSHOT</version>
+          <groupId>com.rabbitstewdio.infrastructure</groupId>
+          <artifactId>webapp-runner</artifactId>
+          <version>7.0.59-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>

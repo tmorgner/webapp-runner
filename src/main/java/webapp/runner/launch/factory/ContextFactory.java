@@ -1,7 +1,6 @@
 package webapp.runner.launch.factory;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
@@ -15,10 +14,10 @@ import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.ExpandWar;
 import org.apache.catalina.startup.Tomcat;
 import webapp.runner.launch.CommandLineParams;
-import webapp.runner.launch.helper.ContextDefinition;
-import webapp.runner.launch.helper.OverrideContext;
 import webapp.runner.launch.SessionStore;
 import webapp.runner.launch.TomcatConfigurator;
+import webapp.runner.launch.helper.ContextDefinition;
+import webapp.runner.launch.helper.OverrideContext;
 import webapp.runner.launch.helper.TomcatUtil;
 
 import javax.servlet.ServletException;
@@ -28,17 +27,21 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class ContextFactory {
 
+  private Logger logger = Logger.getLogger(ContextFactory.class.getName());
+
   private static final String AUTH_ROLE = "user";
+  private static final String AUTH_METHOD = "BASIC";
 
   /*
    * Set up basic auth security on the entire application
    */
-  public void enableBasicAuth(Context ctx, boolean enableSSL) {
+  protected void enableBasicAuth(Context ctx, boolean enableSSL) {
     LoginConfig loginConfig = new LoginConfig();
-    loginConfig.setAuthMethod("BASIC");
+    loginConfig.setAuthMethod(AUTH_METHOD);
     ctx.setLoginConfig(loginConfig);
     ctx.addSecurityRole(AUTH_ROLE);
 
@@ -53,8 +56,7 @@ public class ContextFactory {
     ctx.addConstraint(securityConstraint);
   }
 
-
-  protected void configureWarContext(TomcatConfigurator configurator,
+  public void configureWarContext(TomcatConfigurator configurator,
                                      CommandLineParams commandLineParams,
                                      Tomcat tomcat,
                                      ContextDefinition war) throws IOException, ServletException {
@@ -71,7 +73,7 @@ public class ContextFactory {
     String contextXml = war.getContextXml();
     URL contextUrl = computeContextXmlLocation(contextXml, tomcat.getHost(), ctx);
     if (contextUrl != null) {
-      System.out.println("Using context config: " + contextXml);
+      logger.fine("Using context config: " + contextXml);
       ctx.setConfigFile(contextUrl);
     }
 
@@ -97,7 +99,8 @@ public class ContextFactory {
                                           Host host, Context ctx) throws MalformedURLException {
     if (contextXml != null) {
       return new File(contextXml).toURI().toURL();
-    } else {
+    }
+    else {
       return TomcatUtil.getWebappConfigFile(host, ctx.getDocBase(), ctx.getPath());
     }
   }
@@ -110,18 +113,19 @@ public class ContextFactory {
     final String ctxName = context.getContextPath();
     final File war = context.getWar();
     if (commandLineParams.expandWar && war.isFile()) {
-      File appBase = new File(System.getProperty(Globals.CATALINA_BASE_PROP), tomcat.getHost().getAppBase());
+      File appBase = new File(commandLineParams.baseDir, tomcat.getHost().getAppBase());
       if (appBase.exists()) {
         appBase.delete();
       }
       appBase.mkdir();
       URL fileUrl = new URL("jar:" + war.toURI().toURL() + "!/");
       String expandedDir = ExpandWar.expand(tomcat.getHost(), fileUrl, "/expanded");
-      System.out.println("Expanding " + war.getName() + " into " + expandedDir);
-      System.out.println("Adding Context " + ctxName + " for " + expandedDir);
+      logger.fine("Expanding " + war.getName() + " into " + expandedDir);
+      logger.fine("Adding Context " + ctxName + " for " + expandedDir);
       return addWebapp(tomcat, ctxName, expandedDir);
-    } else {
-      System.out.println("Adding Context " + ctxName + " for " + war.getPath());
+    }
+    else {
+      logger.fine("Adding Context " + ctxName + " for " + war.getPath());
       return addWebapp(tomcat, ctxName, war.getAbsolutePath());
     }
   }
@@ -150,7 +154,7 @@ public class ContextFactory {
   }
 
 
-  protected void configureShutdownHandler(CommandLineParams commandLineParams, final Tomcat tomcat, Context ctx) {
+  public void configureShutdownHandler(CommandLineParams commandLineParams, final Tomcat tomcat, Context ctx) {
     if (!commandLineParams.shutdownOverride) {
       // allow Tomcat to shutdown if a context failure is detected
       final String ctxName = commandLineParams.contextPath;
@@ -159,6 +163,8 @@ public class ContextFactory {
   }
 
   protected static class ContextShutdownListener implements LifecycleListener {
+    private Logger logger = Logger.getLogger(ContextShutdownListener.class.getName());
+
     private final Tomcat tomcat;
     private final String ctxName;
 
@@ -172,8 +178,9 @@ public class ContextFactory {
         Server server = tomcat.getServer();
         if (server instanceof StandardServer) {
           StandardServer standardServer = (StandardServer) server;
-          System.err.printf("SEVERE: Context [%s] failed in [%s] lifecycle. Allowing Tomcat to shutdown.%n",
-                  ctxName, event.getLifecycle().getClass().getName());
+          logger.severe(
+                  String.format("Context [%s] failed in [%s] lifecycle. Allowing Tomcat to shutdown.%n",
+                          ctxName, event.getLifecycle().getClass().getName()));
           standardServer.stopAwait();
         }
       }
