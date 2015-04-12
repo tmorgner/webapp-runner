@@ -1,6 +1,8 @@
 package webapp.runner.launch.factory;
 
+import org.apache.catalina.Host;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.Tomcat;
 import webapp.runner.launch.CommandLineParams;
 import webapp.runner.launch.helper.ContextDefinition;
@@ -20,6 +22,12 @@ public class TomcatFactory {
     final Tomcat tomcat = new Tomcat();
 
     // set directory for temp files
+    final Host host = tomcat.getHost();
+    if (host instanceof StandardHost) {
+      ((StandardHost) host).setUnpackWARs(commandLineParams.expandWar);
+    }
+    tomcat.getHost().setAutoDeploy(commandLineParams.autoDeploy);
+
     tomcat.setBaseDir(resolveTomcatBaseDir(commandLineParams.baseDir, commandLineParams.port));
 
     // initialize the connector
@@ -52,7 +60,7 @@ public class TomcatFactory {
          * tomcat.enableNaming() to be called much earlier in the code.
          */
     if (commandLineParams.enableBasicAuth || commandLineParams.tomcatUsersLocation != null) {
-      new UserStoreFactory().configureUserStore(tomcat, commandLineParams);
+      createUserStoreFactory().configureUserStore(tomcat, commandLineParams);
     }
     return tomcat;
   }

@@ -69,10 +69,13 @@ public class CommandLineParams {
     public String basicAuthPw;
     
     @Parameter(names = "--tomcat-users-location", description = "Location of the tomcat-users.xml file. (relative to the location of the webapp-runner jar file)")
-    public String tomcatUsersLocation = "../../tomcat-users.xml";
+    public String tomcatUsersLocation = null;
     
     @Parameter(names = "--expand-war", description = "Expand the war file and set it as source")
     public boolean expandWar = false;
+
+    @Parameter(names = "--auto-deploy", description = "Automatically discover WARs and deploy them")
+    public boolean autoDeploy = false;
 
     @Parameter(names = "--uri-encoding", description = "Specify URIEncoding for connector")
     public String uriEncoding;
