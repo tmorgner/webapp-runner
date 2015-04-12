@@ -139,6 +139,7 @@ public class ContextFactory {
     ctx.setPath(url);
     ctx.setDocBase(path);
     ctx.addLifecycleListener(new Tomcat.DefaultWebXmlListener());
+    ctx.setParentClassLoader(Thread.currentThread().getContextClassLoader());
 
     ContextConfig ctxCfg = new ContextConfig();
     // prevent it from looking ( if it finds one - it'll have dup error )
