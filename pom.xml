@@ -57,21 +57,6 @@
       <version>${tomcat.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-jasper</artifactId>
-      <version>${tomcat.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-jasper-el</artifactId>
-      <version>${tomcat.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-jsp-api</artifactId>
-      <version>${tomcat.version}</version>
-    </dependency>
-    <dependency>
       <groupId>ru.zinin</groupId>
       <artifactId>tomcat-redis-session</artifactId>
       <version>0.5</version>
@@ -90,6 +75,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>de.javakaffee.msm</groupId>
@@ -101,6 +87,22 @@
         <exclusion>
           <groupId>stax</groupId>
           <artifactId>stax-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-catalina</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-catalina-ha</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-coyote</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-servlet-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
